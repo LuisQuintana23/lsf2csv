@@ -1,0 +1,6 @@
+name: lsf2csv
+channels:
+  - https://conda.anaconda.org/conda-forge
+dependencies:
+  - pytest
+  - python=3.10
