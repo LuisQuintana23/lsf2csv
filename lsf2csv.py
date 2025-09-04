@@ -9,6 +9,19 @@ import logging
 
 logger = setup_logger(__name__, level=logging.INFO)
 
+RE_JOB_ID = r"Job <(\d+)>"
+RE_USER = r"User <(.*?)>"
+RE_STATUS = r"Status <(.*?)>"
+RE_QUEUE = r"Queue <(.*?)>"
+RE_RUSAGE = r"rusage\[mem=(\d+\.?\d*)\]"
+RE_CPU_TIME = r"The CPU time used is ([\d.]+) seconds"
+RE_MEM = r"MEM: (\d+) Mbytes"
+RE_SWAP = r"SWAP: (\d+) Mbytes" 
+RE_THREADS = r"NTHREAD: (\d+)"
+RE_STARTED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): Started"
+RE_FINISHED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): Resource usage collected"
+RE_NODE = r"Started .*? on Host\(s\) <(.*?)>"
+
 def get_job_ids(bjobs_output: str) -> List[int]:
     """
     Get job ids from bjobs -a output extracting the first column,
@@ -39,18 +52,18 @@ def parse_bjobs_details(output: str) -> List[str]:
     """
 
     row = [
-        re.search(r"Job <(\d+)>", output).group(1),
-        re.search(r"User <(.*?)>", output).group(1),
-        re.search(r"Status <(.*?)>", output).group(1),
-        re.search(r"Queue <(.*?)>", output).group(1),
-        float(re.search(r"rusage\[mem=(\d+\.?\d*)\]", output).group(1)) if re.search(r"rusage\[mem=(\d+\.?\d*)\]", output) else "",
-        float(re.search(r"The CPU time used is ([\d.]+) seconds", output).group(1)) if re.search(r"The CPU time used is ([\d.]+) seconds", output) else "",
-        int(re.search(r"MEM: (\d+) Mbytes", output).group(1)) if re.search(r"MEM: (\d+) Mbytes", output) else "",
-        int(re.search(r"SWAP: (\d+) Mbytes", output).group(1)) if re.search(r"SWAP: (\d+) Mbytes", output) else "",
-        int(re.search(r"NTHREAD: (\d+)", output).group(1)) if re.search(r"NTHREAD: (\d+)", output) else "",
-        re.search(r"(\w+ \w+ +\d+ \d+:\d+:\d+): Started", output).group(1) if re.search(r"(\w+ \w+ +\d+ \d+:\d+:\d+): Started", output) else "",
-        re.search(r"(\w+ \w+ +\d+ \d+:\d+:\d+): Resource usage collected", output).group(1) if re.search(r"(\w+ \w+ +\d+ \d+:\d+:\d+): Resource usage collected", output) else "",
-        re.search(r"Started .*? on Host\(s\) <(.*?)>", output).group(1) if re.search(r"Started .*? on Host\(s\) <(.*?)>", output) else ""
+        re.search(RE_JOB_ID, output).group(1),
+        re.search(RE_USER, output).group(1),
+        re.search(RE_STATUS, output).group(1),
+        re.search(RE_QUEUE, output).group(1),
+        float(re.search(RE_RUSAGE, output).group(1)) if re.search(RE_RUSAGE, output) else "",
+        float(re.search(RE_CPU_TIME, output).group(1)) if re.search(RE_CPU_TIME, output) else "",
+        int(re.search(RE_MEM, output).group(1)) if re.search(RE_MEM, output) else "",
+        int(re.search(RE_SWAP, output).group(1)) if re.search(RE_SWAP, output) else "",
+        int(re.search(RE_THREADS, output).group(1)) if re.search(RE_THREADS, output) else "",
+        re.search(RE_STARTED, output).group(1) if re.search(RE_STARTED, output) else "",
+        re.search(RE_FINISHED, output).group(1) if re.search(RE_FINISHED, output) else "",
+        re.search(RE_NODE, output).group(1) if re.search(RE_NODE, output) else ""
     ]
 
     return row
