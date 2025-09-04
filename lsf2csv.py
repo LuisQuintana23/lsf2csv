@@ -4,6 +4,10 @@ import subprocess
 import re
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
+from logger import setup_logger
+import logging
+
+logger = setup_logger(__name__, level=logging.INFO)
 
 def get_job_ids(bjobs_output: str) -> List[int]:
     """
@@ -80,23 +84,36 @@ def export(headers: List[str], rows: List, exporter: Exporter, output: str = "jo
         path=output
     )
 
+    logger.info(f"The jobs have been exported to: {output} successfully")
+
 if __name__ == "__main__":
     import parser
     args = parser.get_args()
 
     import subprocess
     # -noheader exclude headers row, -a all jobs
+    cmd = ["bjobs", "-noheader", "-a"]
+
+    if args.user:
+        cmd.extend(["-u", args.user])
+
     bjobs_output = subprocess.check_output(
-        ["bjobs", "-noheader", "-a"] if not args.user else ["bjobs", "-noheader", "-a", "-u", args.user],
+        cmd,
         text=True
     )
 
+    logger.info("Getting job ids")
     job_ids = get_job_ids(bjobs_output)
 
-
     headers = ["JobID", "User", "Status", "Queue", "Rusage", "CPUTime", "MEM", "SWAP", "NTHREAD", "Started", "Finished", "Node"]
+    logger.info("Extracting info from bjobs")
     rows = fetch_all_jobs_concurrent(job_ids, max_workers=args.max_workers)
 
+    if len(rows) == 0:
+        logger.warning("No jobs were found")
+        exit(1)
+
     from exporter import CSVExporter
+    logger.info("Exporting")
     export(headers, rows, CSVExporter(), args.output)
 
