@@ -1,4 +1,4 @@
-from generate_metrics import get_job_ids, parse_bjobs_details
+from lsf2csv import get_job_ids, parse_bjobs_details
 import pytest
 
 def test_get_job_ids():
@@ -26,7 +26,7 @@ def test_get_job_ids():
     28240   user_example   EXIT  q_residual mn325       g1_r        */jobs.csv Sep  3 21:47
     28241   user_example   EXIT  q_residual mn325       g1_r        /bin/bash  Sep  3 21:48
     """
-    assert get_job_ids(bjobs_output) == [28250, 17381, 17382, 17392, 17395, 17445, 21182, 21573, 21574, 21618, 21619, 21630, 21633, 22394, 22397, 22399, 22402, 22404, 28240, 28241]
+    assert get_job_ids(bjobs_output) == ['28250', '17381', '17382', '17392', '17395', '17445', '21182', '21573', '21574', '21618', '21619', '21630', '21633', '22394', '22397', '22399', '22402', '22404', '28240', '28241']
 
 
 def test_get_used_resources():
