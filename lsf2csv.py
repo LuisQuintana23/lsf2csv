@@ -9,7 +9,7 @@ import logging
 
 logger = setup_logger(__name__, level=logging.INFO)
 
-headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "Node","AVGMEM", "Started", "Finished"]
+headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "AVGMEM", "Node", "Started", "Finished"]
 
 RE_JOB_ID = r"Job <(\d+)>"
 RE_USER = r"User <(.*?)>"
