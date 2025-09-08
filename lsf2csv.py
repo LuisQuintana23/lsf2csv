@@ -13,14 +13,12 @@ RE_JOB_ID = r"Job <(\d+)>"
 RE_USER = r"User <(.*?)>"
 RE_STATUS = r"Status <(.*?)>"
 RE_QUEUE = r"Queue <(.*?)>"
-RE_RUSAGE = r"rusage\[mem=(\d+\.?\d*)\]"
 RE_CPU_TIME = r"The CPU time used is ([\d.]+) seconds"
-RE_MEM = r"MEM: (\d+) Mbytes"
-RE_SWAP = r"SWAP: (\d+) Mbytes" 
-RE_THREADS = r"NTHREAD: (\d+)"
-RE_STARTED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): Started"
-RE_FINISHED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): Resource usage collected"
+RE_MAX_MEM = r"MAX MEM: (\d+) Mbytes"
+RE_AVG_MEM = r"AVG MEM: (\d+) Mbytes"
 RE_NODE = r"Started .*? on Host\(s\) <(.*?)>"
+RE_STARTED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): Started"
+RE_FINISHED = r"(\w+ \w+ +\d+ \d+:\d+:\d+): [(Resource usage collected)(Done successfully)]"
 
 def get_job_ids(bjobs_output: str) -> List[int]:
     """
@@ -51,6 +49,7 @@ def parse_bjobs_details(output: str) -> List[str]:
     a list representing the row values
     """
 
+    # remove any sequence of whitespaces (\n, \t or multiple spaces)
     output = re.sub(r"\s+", " ", output).strip()
 
     row = [
@@ -58,15 +57,19 @@ def parse_bjobs_details(output: str) -> List[str]:
         re.search(RE_USER, output).group(1),
         re.search(RE_STATUS, output).group(1),
         re.search(RE_QUEUE, output).group(1),
-        float(re.search(RE_RUSAGE, output).group(1)) if re.search(RE_RUSAGE, output) else "",
         float(re.search(RE_CPU_TIME, output).group(1)) if re.search(RE_CPU_TIME, output) else "",
-        int(re.search(RE_MEM, output).group(1)) if re.search(RE_MEM, output) else "",
-        int(re.search(RE_SWAP, output).group(1)) if re.search(RE_SWAP, output) else "",
-        int(re.search(RE_THREADS, output).group(1)) if re.search(RE_THREADS, output) else "",
+        int(re.search(RE_MAX_MEM, output).group(1)) if re.search(RE_MAX_MEM, output) else "",
+        int(re.search(RE_AVG_MEM, output).group(1)) if re.search(RE_AVG_MEM, output) else "",
+        re.search(RE_NODE, output).group(1) if re.search(RE_NODE, output) else "",
+    ]
+
+    row = [str(value).replace(' ', '') for value in row]
+
+    # add datetimes avoiding removing whitespace
+    row.extend([
         re.search(RE_STARTED, output).group(1) if re.search(RE_STARTED, output) else "",
         re.search(RE_FINISHED, output).group(1) if re.search(RE_FINISHED, output) else "",
-        re.search(RE_NODE, output).group(1) if re.search(RE_NODE, output) else ""
-    ]
+    ])
 
     return row
 
@@ -120,7 +123,7 @@ if __name__ == "__main__":
     logger.info("Getting job ids")
     job_ids = get_job_ids(bjobs_output)
 
-    headers = ["JobID", "User", "Status", "Queue", "Rusage", "CPUTime", "MEM", "SWAP", "NTHREAD", "Started", "Finished", "Node"]
+    headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "Node","AVGMEM", "Started", "Finished"]
     logger.info("Extracting info from bjobs")
     rows = fetch_all_jobs_concurrent(job_ids, max_workers=args.max_workers)
 
@@ -131,4 +134,3 @@ if __name__ == "__main__":
     from exporter import CSVExporter
     logger.info("Exporting")
     export(headers, rows, CSVExporter(), args.output)
-
