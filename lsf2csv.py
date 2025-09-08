@@ -9,12 +9,13 @@ import logging
 
 logger = setup_logger(__name__, level=logging.INFO)
 
-headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "AVGMEM", "Node", "Started", "Finished"]
+headers = ["JobID", "User", "Status", "Queue", "JobName", "CPUTime", "MaxMEM", "AVGMEM", "Node", "Started", "Finished"]
 
 RE_JOB_ID = r"Job <(\d+)>"
 RE_USER = r"User <(.*?)>"
 RE_STATUS = r"Status <(.*?)>"
 RE_QUEUE = r"Queue <(.*?)>"
+RE_JOB_NAME = r"#BSUB\s+-J\s+([^;]+);"
 RE_CPU_TIME = r"The CPU time used is ([\d.]+) seconds"
 RE_MAX_MEM = r"MAX MEM: (\d+) Mbytes"
 RE_AVG_MEM = r"AVG MEM: (\d+) Mbytes"
@@ -59,6 +60,7 @@ def parse_bjobs_details(output: str) -> List[str]:
         re.search(RE_USER, output).group(1),
         re.search(RE_STATUS, output).group(1),
         re.search(RE_QUEUE, output).group(1),
+        re.search(RE_JOB_NAME, output).group(1) if re.search(RE_JOB_NAME, output) else "",
         float(re.search(RE_CPU_TIME, output).group(1)) if re.search(RE_CPU_TIME, output) else "",
         int(re.search(RE_MAX_MEM, output).group(1)) if re.search(RE_MAX_MEM, output) else "",
         int(re.search(RE_AVG_MEM, output).group(1)) if re.search(RE_AVG_MEM, output) else "",

@@ -31,24 +31,24 @@ def test_get_job_ids():
 
 def test_get_used_resources():
     bjobs = """
-    Job <35179>, Job Name <mixcoacmiapplpydelaunay_SenDT41_202301_202506_01>, User 
+    Job <35179>, Job Name <example_SenDT41_202301_202506_01>, User 
                      <user_example>, Project <default>, Status <DONE>, Queue <q_htc>, 
-                     Command <#!/bin/bash; #BSUB -J mixcoacmiapplpydelaunay_Sen
+                     Command <#!/bin/bash; #BSUB -J exampleexample_Sen
                      DT41_202301_202506_01;#BSUB -q q_htc;#BSUB -n 1;#BSUB -o /
-                     tmpu/desr_g/user_example/insarlab/user_example/scratch/logs/mixcoacmiapp
+                     tmpu/desr_g/user_example/insarlab/user_example/scratch/logs/examplemiapp
                      lpydelaunay_SenDT41_202301_202506_01/20250825-213325_%J.o;
                      #BSUB -e /tmpu/desr_g/user_example/insarlab/user_example/scratch/logs/mi
-                     xcoacmiapplpydelaunay_SenDT41_202301_202506_01/20250825-21
+                     xcoacexampledelaunay_SenDT41_202301_202506_01/20250825-21
                      3325_%J.e; export OMP_NUM_THREADS=1; minsarApp.bash /tmpu/
-                     desr_g/user_example/code/miztli-insar/samples/finsar/mixcoac/mixc
-                     oacmiapplpydelaunay_SenDT41_202301_202506_01.template --no
+                     desr_g/user_example/code/miztli-insar/samples/finsar/example/example
+                     .template --no
                      -tmp --start download --stop ifgram --burst-download --mia
                      plpy --no-mintpy>
 Sun Sep  7 15:52:03: Submitted from host <mn325>, CWD </tmpu/desr_g/user_example/insar
                      lab/user_example/scratch>, Output File </tmpu/desr_g/user_example/insarl
-                     ab/user_example/scratch/logs/mixcoacmiapplpydelaunay_SenDT41_2023
+                     ab/user_example/scratch/logs/example_SenDT41_2023
                      01_202506_01/20250825-213325_35179.o>, Error File </tmpu/d
-                     esr_g/user_example/insarlab/user_example/scratch/logs/mixcoacmiapplpydel
+                     esr_g/user_example/insarlab/user_example/scratch/logs/exampleexampledel
                      aunay_SenDT41_202301_202506_01/20250825-213325_35179.e>;
 Sun Sep  7 15:52:08: Started 1 Task(s) on Host(s) <mn391>, Allocated 1 Slot(s) 
                      on Host(s) <mn391>, Execution Home </home/desr_g/user_example>, E
@@ -76,6 +76,7 @@ Sun Sep  7 18:14:12: Done successfully. The CPU time used is 580.2 seconds.
  Effective: select[type == any ] order[r15s:pg] same[type:model] 
 """
 
-    expected = ['35179', 'user_example', 'DONE', 'q_htc', '580.2', '2323', '82', 'mn391', 'Sun Sep 7 15:52:08', 'Sun Sep 7 18:14:12']
+    expected = ['35179', 'user_example', 'DONE', 'q_htc', 'exampleexample_SenDT41_202301_202506_01', '580.2', '2323', '82', 'mn391', 'Sun Sep 7 15:52:08', 'Sun Sep 7 18:14:12']
     result = parse_bjobs_details(bjobs) 
+    print(result)
     assert result == expected
