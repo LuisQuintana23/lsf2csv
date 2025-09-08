@@ -9,6 +9,8 @@ import logging
 
 logger = setup_logger(__name__, level=logging.INFO)
 
+headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "Node","AVGMEM", "Started", "Finished"]
+
 RE_JOB_ID = r"Job <(\d+)>"
 RE_USER = r"User <(.*?)>"
 RE_STATUS = r"Status <(.*?)>"
@@ -123,7 +125,6 @@ if __name__ == "__main__":
     logger.info("Getting job ids")
     job_ids = get_job_ids(bjobs_output)
 
-    headers = ["JobID", "User", "Status", "Queue", "CPUTime", "MaxMEM", "Node","AVGMEM", "Started", "Finished"]
     logger.info("Extracting info from bjobs")
     rows = fetch_all_jobs_concurrent(job_ids, max_workers=args.max_workers)
 
