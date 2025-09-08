@@ -51,6 +51,8 @@ def parse_bjobs_details(output: str) -> List[str]:
     a list representing the row values
     """
 
+    output = re.sub(r"\s+", " ", output).strip()
+
     row = [
         re.search(RE_JOB_ID, output).group(1),
         re.search(RE_USER, output).group(1),
